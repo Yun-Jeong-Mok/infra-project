@@ -1,7 +1,17 @@
 # Openstack 환경 기반 프라이빗 클라우드 인프라 구축
 
 ### 인프라 (총 16대 인스턴스로 구성)
-Openstack, Kubernetes, Helm, Podman, Buildah, Flannel, HAProxy, Zerotier, Tekton, Ansible, wrk, Prometheus, Alertmanager, Grafana, Loki, Promtail, Metrics-server,  Minio, Velero, Rook-ceph, Docker-registry, Gitea
+### 🛠️ 기술 스택
+
+<p align="left">
+  <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white">
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white">
+  <img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black">
+  <img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white">
+  <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white">
+  <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white">
+  <img src="https://img.shields.io/badge/Chroma-004949?style=for-the-badge&logo=data:image/svg+xml;base64,...(Chroma 로고 SVG 데이터)">
+</p>
 
 ### 웹 서비스
 Javascript, TailwindCSS, Astro, Python, Scikit-learn, InsightFace, FastAPI, ChromaDB
