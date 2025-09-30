@@ -211,7 +211,7 @@ Hyper-V 환경에서 Ubuntu 24.04 server ISO 이미지 사용
 ### 😁👍 프로젝트 관련 자료
 | 항목 | 링크 |
 |------|------|
-| 🌐 서비스 호스팅 도메인 | <a href="https://astro1.gasan.digital" target="_blank">https://astro1.gasandigital</a> |
+| 🌐 서비스 호스팅 도메인 | <a href="https://astro1.gasan.digital" target="_blank">https://astro1.gasan.digital</a> |
 | 🎥 시연 영상 | <a href="https://www.youtube.com/watch?v=Yh9-uA_vZvc" target="_blank">영상 보기</a> |
 | 📑 PPT 자료 |  <a href="https://weak-health-fa6.notion.site/_-_-_-_-27ee70eaf51c8025b5a8d524dc88ba2a" target="_blank">PPT 보기</a>  |
 
