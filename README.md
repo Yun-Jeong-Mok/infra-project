@@ -1,9 +1,13 @@
 # ☁️ Openstack 환경 기반 프라이빗 클라우드 인프라 구축
 
+
+
 ## 📖 프로젝트 개요
 Openstack 기반 프라이빗 클라우드 인프라를 구축하여  
 모니터링, 로깅, 로드밸런싱, 오토스케일링, CI/CD 자동화, 클러스터 구성 자동화, 백업 스케줄링 및 이중화, 부하테스트 등  
 어떠한 서비스든 관계 없이 실제 운영에 필요한 전반적인 기능을 구현을 목표로 하였습니다.
+
+
 
 ## ✨ 주요 구현 기능
 - 📊 **모니터링 및 로깅** : Prometheus + Grafana + Loki + Promtail, Metrics-server
@@ -24,10 +28,16 @@ Openstack 기반 프라이빗 클라우드 인프라를 구축하여
 이외 tls 설정, 권한 관리, 규칙 설정 등...
 ---
 
+
+
 ## ⚙️🛠️ 기술 스택
+
+
 
 ### 💻 인프라 (총 16대 인스턴스 구성)
 ![OpenStack](https://img.shields.io/badge/OpenStack-EA2046?logo=openstack&logoColor=white)
+![Rocky Linux 9](https://img.shields.io/badge/Rocky%20Linux-9-10B981?logo=rockylinux&logoColor=white)
+![Ubuntu 24.04](https://img.shields.io/badge/Ubuntu-24.04-E95420?logo=ubuntu&logoColor=white)
 ![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?logo=kubernetes&logoColor=white)
 ![Helm](https://img.shields.io/badge/Helm-0F1689?logo=helm&logoColor=white)
 ![Podman](https://img.shields.io/badge/Podman-892CA0?logo=podman&logoColor=white)
@@ -188,15 +198,28 @@ wrk 4.2.0 [epoll] Copyright (C) 2012 Will Glozer
 
 ---
 
-## 외부 백업 저장소 (개인 노트북 사용)
+##  외부 백업 저장소 (개인 노트북 사용)
 Hyper-V 환경에서 Ubuntu 24.04 server ISO 이미지 사용
 내부 저장소와 동일한 버전의 Podman과 minio 컨테이너 이미지 사용
 
 ---
 
 
-> 서비스 호스팅 도메인 - https://astro1.gasan.digital
-> 시연 영상 - https://www.youtube.com/watch?v=Yh9-uA_vZvc&feature=youtu.be
-> PPT 자료 - https://www.slideshare.net/secret/DUL5FMDCbxhseF
-> 윤정목 📧 yjm011019@naver.com |📱 010-7158-4287
-- GitHub: [github.com/username](https://github.com/Yun-Jeong-Mok)
+<div align="center">
+
+### 😁👍 프로젝트 관련 자료
+| 항목 | 링크 |
+|------|------|
+| 🌐 서비스 호스팅 도메인 | <a href="https://astro1.gasan.digital" target="_blank">https://astro1.gasandigital</a> |
+| 🎥 시연 영상 | <a href="https://www.youtube.com/watch?v=Yh9-uA_vZvc" target="_blank">영상 보기</a> |
+| 📑 PPT 자료 | <iframe src="https://weak-health-fa6.notion.site/ebd/27ee70eaf51c8025b5a8d524dc88ba2a" width="100%" height="600" frameborder="0" allowfullscreen /> |
+
+---
+
+### 📬 Contact info
+<b>🪪 윤정목</b>  
+📧 <a href="mailto:yjm011019@naver.com">yjm011019@naver.com</a>  
+📱 010-7158-4287  
+
+</div>
+</p>k)
