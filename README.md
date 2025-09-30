@@ -1,24 +1,17 @@
 # Openstack 환경 기반 프라이빗 클라우드 인프라 구축
 
-### 인프라 (총 16대 인스턴스로 구성)
-### 🛠️ 기술 스택
 
-<p align="left">
-  <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white">
-  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white">
-  <img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black">
-  <img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white">
-  <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white">
-  <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white">
-  <img src="https://img.shields.io/badge/Chroma-004949?style=for-the-badge&logo=data:image/svg+xml;base64,...(Chroma 로고 SVG 데이터)">
-</p>
+## 🛠️ 기술 스택
+
+### 인프라 (총 16대 인스턴스로 구성)
+
+<p> <img src="https://www.google.com/search?q=https://img.shields.io/badge/Openstack-F01717%3Fstyle%3Dflat-square%26logo%3Dopenstack%26logoColor%3Dwhite"/> <img src="https://www.google.com/search?q=https://img.shields.io/badge/Kubernetes-326CE5%3Fstyle%3Dflat-square%26logo%3Dkubernetes%26logoColor%3Dwhite"/> <img src="https://www.google.com/search?q=https://img.shields.io/badge/Helm-0F1689%3Fstyle%3Dflat-square%26logo%3Dhelm%26logoColor%3Dwhite"/> <img src="https://www.google.com/search?q=https://img.shields.io/badge/Podman-014451%3Fstyle%3Dflat-square%26logo%3Dpodman%26logoColor%3Dwhite"/> <img src="https://www.google.com/search?q=https://img.shields.io/badge/Buildah-326CE5%3Fstyle%3Dflat-square%26logo%3Ddocker%26logoColor%3Dwhite"/> <img src="https://www.google.com/search?q=https://img.shields.io/badge/Flannel-F05C33%3Fstyle%3Dflat-square%26logo%3Dkubernetes%26logoColor%3Dwhite"/> <img src="https://www.google.com/search?q=https://img.shields.io/badge/HAProxy-FF4F17%3Fstyle%3Dflat-square%26logo%3Dhaproxy%26logoColor%3Dwhite"/> <img src="https://www.google.com/search?q=https://img.shields.io/badge/ZeroTier-2391F0%3Fstyle%3Dflat-square%26logo%3Dzerotier%26logoColor%3Dwhite"/> <img src="https://www.google.com/search?q=https://img.shields.io/badge/Tekton-319DFF%3Fstyle%3Dflat-square%26logo%3Dtekton%26logoColor%3Dwhite"/> <img src="https://www.google.com/search?q=https://img.shields.io/badge/Ansible-EE0000%3Fstyle%3Dflat-square%26logo%3Dansible%26logoColor%3Dwhite"/> <img src="https://www.google.com/search?q=https://img.shields.io/badge/wrk-444444%3Fstyle%3Dflat-square%26logo%3Dapache%26logoColor%3Dwhite"/> <img src="https://www.google.com/search?q=https://img.shields.io/badge/Prometheus-E6522C%3Fstyle%3Dflat-square%26logo%3Dprometheus%26logoColor%3Dwhite"/> <img src="https://www.google.com/search?q=https://img.shields.io/badge/Grafana-F46800%3Fstyle%3Dflat-square%26logo%3Dgrafana%26logoColor%3Dwhite"/> <img src="https://www.google.com/search?q=https://img.shields.io/badge/Loki-2D576F%3Fstyle%3Dflat-square%26logo%3Dgrafana%26logoColor%3Dwhite"/> <img src="https://www.google.com/search?q=https://img.shields.io/badge/Minio-FF8C00%3Fstyle%3Dflat-square%26logo%3Dminio%26logoColor%3Dwhite"/> <img src="https://www.google.com/search?q=https://img.shields.io/badge/Velero-4E9DBC%3Fstyle%3Dflat-square%26logo%3Dkubernetes%26logoColor%3Dwhite"/> <img src="https://www.google.com/search?q=https://img.shields.io/badge/Rook/Ceph-5404FF%3Fstyle%3Dflat-square%26logo%3Dceph%26logoColor%3Dwhite"/> </p>
 
 ### 웹 서비스
-Javascript, TailwindCSS, Astro, Python, Scikit-learn, InsightFace, FastAPI, ChromaDB
+<p> <img src="https://www.google.com/search?q=https://img.shields.io/badge/Javascript-F7DF1E%3Fstyle%3Dflat-square%26logo%3Djavascript%26logoColor%3Dblack"/> <img src="https://www.google.com/search?q=https://img.shields.io/badge/TailwindCSS-06B6D4%3Fstyle%3Dflat-square%26logo%3Dtailwindcss%26logoColor%3Dwhite"/> <img src="https://www.google.com/search?q=https://img.shields.io/badge/Astro-FF5D01%3Fstyle%3Dflat-square%26logo%3Dastro%26logoColor%3Dwhite"/> <img src="https://www.google.com/search?q=https://img.shields.io/badge/Python-3776AB%3Fstyle%3Dflat-square%26logo%3Dpython%26logoColor%3Dwhite"/> <img src="https://www.google.com/search?q=https://img.shields.io/badge/Scikit--learn-F7931E%3Fstyle%3Dflat-square%26logo%3Dscikit-learn%26logoColor%3Dwhite"/> <img src="https://www.google.com/search?q=https://img.shields.io/badge/InsightFace-333333%3Fstyle%3Dflat-square%26logo%3Dtensorflow%26logoColor%3Dwhite"/> <img src="https://www.google.com/search?q=https://img.shields.io/badge/FastAPI-009688%3Fstyle%3Dflat-square%26logo%3Dfastapi%26logoColor%3Dwhite"/> <img src="https://www.google.com/search?q=https://img.shields.io/badge/ChromaDB-1A8D49%3Fstyle%3Dflat-square%26logo%3Dchroma%26logoColor%3Dwhite"/> </p>
 
 ### 외부 서비스
-Slack(웹훅 알람), HostingKR(노드포트로 도메인 호스팅), Github, Quay.io
-
+<p> <img src="https://www.google.com/search?q=https://img.shields.io/badge/Javascript-F7DF1E%3Fstyle%3Dflat-square%26logo%3Djavascript%26logoColor%3Dblack"/> <img src="https://www.google.com/search?q=https://img.shields.io/badge/TailwindCSS-06B6D4%3Fstyle%3Dflat-square%26logo%3Dtailwindcss%26logoColor%3Dwhite"/> <img src="https://www.google.com/search?q=https://img.shields.io/badge/Astro-FF5D01%3Fstyle%3Dflat-square%26logo%3Dastro%26logoColor%3Dwhite"/> <img src="https://www.google.com/search?q=https://img.shields.io/badge/Python-3776AB%3Fstyle%3Dflat-square%26logo%3Dpython%26logoColor%3Dwhite"/> <img src="https://www.google.com/search?q=https://img.shields.io/badge/Scikit--learn-F7931E%3Fstyle%3Dflat-square%26logo%3Dscikit-learn%26logoColor%3Dwhite"/> <img src="https://www.google.com/search?q=https://img.shields.io/badge/InsightFace-333333%3Fstyle%3Dflat-square%26logo%3Dtensorflow%26logoColor%3Dwhite"/> <img src="https://www.google.com/search?q=https://img.shields.io/badge/FastAPI-009688%3Fstyle%3Dflat-square%26logo%3Dfastapi%26logoColor%3Dwhite"/> <img src="https://www.google.com/search?q=https://img.shields.io/badge/ChromaDB-1A8D49%3Fstyle%3Dflat-square%26logo%3Dchroma%26logoColor%3Dwhite"/> </p>
 ---
 
 ## k8s 클러스터 관리 인스턴스 및 k8s 클러스터
