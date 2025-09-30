@@ -86,8 +86,28 @@ Openstack 기반 프라이빗 클라우드 인프라를 구축하여
 
 ## k8s 클러스터 관리 인스턴스 및 k8s 클러스터
 
+```
+### 설치 자동화 스크립트
+cd k8s-cluster
+bash k8s-setup.sh
+# 또는
+chmod +x k8s-setup.sh && ./k8s-setup.sh
+```
+```
+### 관리 노드에서 작업 시
+bash kubectl.sh
+chmod +x kubectl.sh && ./kubectl.sh
+
+mkdir ~/.kube
+scp <컨트롤노드>:/etc/kubernetes/admin.conf ~/.kube/config
+```
 ### helm version
 
+```
+### 헬름 설치
+curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+bash get_helm.sh
+```
 k8s 패키지 관리 도구
 (loki-stack, prometheus-grafana, velero, rook-ceph, tekton, flannel 등 설치)
 ```
@@ -146,10 +166,10 @@ BuildPlatform:   linux/amd64
 
 ## 내부 저장소용 인스턴스 (1대)
 
-- gitea - 내부 깃 저장소
-- docker registry - 내부 이미지 저장소
-- registry-ui - 이미지 저장소 web UI
-- miniO - 백업용 객체 저장소
+- gitea - 내부 깃 저장소 (port-3000)
+- docker registry - 내부 이미지 저장소 (port-5000)
+- registry-ui - 이미지 저장소 web UI (port-8000)
+- miniO - 백업용 객체 저장소 (port-9000,9001)
 
 ### podman container images
 
@@ -177,6 +197,14 @@ OS/Arch:      linux/amd64
 ## 앤서블 부하테스트 클러스터 (컨트롤 1대, 커맨드 5대)
 HTTP GET Flooding 시뮬레이션
 
+```
+dnf install -y ansible
+cd ansible
+
+ansible-playbook -i inventory wrk-setup.yaml
+ansible-playbook -i inventory ddos.yaml # 설치 완료 시
+```
+
 ### ansible version
 부하테스트 클러스터 구성 및 공격 자동화
 ```
@@ -193,6 +221,7 @@ ansible [core 2.14.18]
 
 ### wrk version
 오픈소스 경량 부하테스트 도구
+
 ```
 wrk 4.2.0 [epoll] Copyright (C) 2012 Will Glozer
 ```
