@@ -1,0 +1,305 @@
+---
+import Layout from "../components/Layout.astro";
+import '../styles/global.css';
+---
+
+<Layout>
+    <div class="relative bg-white dark:bg-gray-800 rounded-xl shadow-lg p-10 w-full max-w-3xl mx-auto flex flex-col items-center">
+        <a href="/" class="absolute top-6 left-6 px-4 py-2 bg-red-600 text-white rounded-lg shadow hover:bg-red-700 transition text-sm font-semibold z-10 cursor-pointer">
+            ← 뒤로가기
+        </a>
+        <h1 class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">DB 얼굴 목록</h1>
+        <div class="w-full flex flex-col items-center justify-center mb-4">
+            <div id="video-and-button" class="flex flex-col items-center hidden">
+                <div class="video-container relative w-full max-w-sm mb-4">
+                    <video id="webcam" class="w-full rounded-lg shadow-lg" autoplay playsinline></video>
+                    <canvas id="face-canvas" class="absolute top-0 left-0 w-full h-full"></canvas>
+                </div>
+                <div class="flex space-x-4">
+                    <button id="authAndDeleteBtn" class="px-6 py-3 rounded-full bg-red-600 text-white font-semibold shadow-lg hover:bg-red-700 transition cursor-pointer">
+                        인증 후 삭제
+                    </button>
+                    <button id="closeWebcamBtn" class="px-6 py-3 rounded-full bg-gray-500 text-white font-semibold shadow-lg hover:bg-gray-600 transition cursor-pointer">
+                        캠 닫기
+                    </button>
+                </div>
+            </div>
+            <div id="selectMessage" class="w-full max-w-sm text-center font-semibold text-gray-700 dark:text-gray-200">
+                삭제할 얼굴을 목록에서 선택하세요.
+            </div>
+            <div id="statusMsg" class="mt-4 text-center text-sm"></div>
+        </div>
+
+        <div id="loadingOverlay" class="absolute inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center rounded-xl hidden">
+            <div class="text-white text-center">
+                <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mb-4"></div>
+                <div id="loadingMessage">인증 중...</div>
+            </div>
+        </div>
+
+        <table class="w-full text-left border-collapse text-gray-900 dark:text-gray-200">
+            <thead>
+                <tr class="border-b border-gray-300">
+                    <th class="py-2 px-4">선택</th>
+                    <th class="py-2 px-4">이름</th>
+                    <th class="py-2 px-4">ID</th>
+                    <th class="py-2 px-4">상세</th>
+                </tr>
+            </thead>
+            <tbody id="faceTableBody"></tbody>
+        </table>
+    </div>
+
+    <!-- Custom Modal for Confirmation -->
+    <div id="confirmModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white dark:bg-gray-700 p-6 rounded-lg shadow-xl text-center">
+            <p id="modalMessage" class="text-gray-800 dark:text-gray-200 mb-4 font-semibold"></p>
+            <div class="flex justify-center space-x-4">
+                <button id="modalConfirmBtn" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">삭제</button>
+                <button id="modalCancelBtn" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition">취소</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .loader {
+            border-top-color: #3498db;
+            -webkit-animation: spinner 1.5s linear infinite;
+            animation: spinner 1.5s linear infinite;
+        }
+        @-webkit-keyframes spinner {
+            0% { -webkit-transform: rotate(0deg); }
+            100% { -webkit-transform: rotate(360deg); }
+        }
+        @keyframes spinner {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+
+    <script type="text/javascript">
+        const video = document.getElementById('webcam');
+        const authAndDeleteBtn = document.getElementById('authAndDeleteBtn');
+        const closeWebcamBtn = document.getElementById('closeWebcamBtn');
+        const statusMsg = document.getElementById('statusMsg');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const loadingMessage = document.getElementById('loadingMessage');
+        const confirmModal = document.getElementById('confirmModal');
+        const modalMessage = document.getElementById('modalMessage');
+        const modalConfirmBtn = document.getElementById('modalConfirmBtn');
+        const modalCancelBtn = document.getElementById('modalCancelBtn');
+        const videoAndButton = document.getElementById('video-and-button');
+        const selectMessage = document.getElementById('selectMessage');
+
+        let isVideoPlaying = false;
+        let stream = null;
+        const NUM_FRAMES = 10;
+        const FRAME_INTERVAL = 50;
+
+        function initWebcam() {
+            if (isVideoPlaying) {
+                return;
+            }
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                try {
+                    navigator.mediaDevices.getUserMedia({ video: true }).then(s => {
+                        stream = s;
+                        video.srcObject = stream;
+                        video.onloadedmetadata = () => {
+                            video.play();
+                            isVideoPlaying = true;
+                        };
+                    }).catch(err => {
+                        showMessage(`카메라 접근 오류: ${err.message}`, 'error');
+                    });
+                } catch (err) {
+                    showMessage(`카메라 접근 오류: ${err.message}`, 'error');
+                }
+            } else {
+                showMessage('이 브라우저에서는 웹캠을 지원하지 않습니다.', 'error');
+            }
+        }
+
+        function closeWebcam() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                video.srcObject = null;
+                isVideoPlaying = false;
+                videoAndButton.classList.add('hidden');
+                selectMessage.classList.remove('hidden');
+                showMessage('캠이 닫혔습니다.', 'success');
+            }
+        }
+
+        function showMessage(msg, type) {
+            statusMsg.textContent = msg;
+            statusMsg.className = `mt-4 text-center text-sm ${type === 'success' ? 'text-green-600' : 'text-red-600'}`;
+        }
+        
+        function showLoading(msg) {
+            loadingMessage.textContent = msg;
+            loadingOverlay.classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            loadingOverlay.classList.add('hidden');
+        }
+
+        function captureWebcamImage() {
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            return new Promise(resolve => {
+                canvas.toBlob(blob => {
+                    resolve(blob);
+                }, 'image/jpeg');
+            });
+        }
+        
+        async function captureMultipleImages() {
+            const capturedFiles = [];
+            showLoading(`인증 중... (0/${NUM_FRAMES})`);
+            for (let i = 0; i < NUM_FRAMES; i++) {
+                const file = await captureWebcamImage();
+                if (file) {
+                    capturedFiles.push(file);
+                }
+                loadingMessage.textContent = `사용자 인증 중...`;
+                await new Promise(resolve => setTimeout(resolve, FRAME_INTERVAL));
+            }
+            return capturedFiles;
+        }
+
+        async function fetchFaceList() {
+            try {
+                const res = await fetch("/api/db/list");
+                const data = await res.json();
+                const tbody = document.getElementById("faceTableBody");
+                if (!data.faces || data.faces.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-gray-400 py-4">등록된 얼굴이 없습니다.</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = data.faces.map(face => `
+                    <tr class="border-b border-gray-200">
+                        <td class="py-2 px-4">
+                            <input type="radio" name="faceId" value="${face.id}" data-name="${face.metadata?.name || 'unknown'}" class="form-radio text-indigo-600 h-4 w-4">
+                        </td>
+                        <td class="py-2 px-4 font-semibold text-gray-900 dark:text-gray-200">${face.metadata?.name || 'unknown'}</td>
+                        <td class="py-2 px-4 font-mono text-xs text-gray-600 dark:text-gray-400">${face.id.substring(0, 8)}...</td>
+                        <td class="py-2 px-4">
+                            <button data-id="${face.id}" class="toggle-detail-btn px-3 py-1 rounded bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 transition cursor-pointer">상세 보기</button>
+                        </td>
+                    </tr>
+                    <tr id="detail-row-${face.id}" class="hidden border-b border-gray-200">
+                        <td colspan="4" class="py-2 px-4">
+                            <div class="text-sm bg-gray-100 rounded p-3 border border-gray-300 text-gray-900 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300">
+                                <div><b>이름:</b> ${face.metadata?.name || 'unknown'}</div>
+                                <div><b>ID:</b> ${face.id}</div>
+                                <div><b>사용자:</b> ${face.metadata?.registered_by || 'unknown'}</div>
+                                <div><b>문서명:</b> ${face.document}</div>
+                                <div>
+                                    <b>임베딩:</b>
+                                    <span class="break-all text-xs">
+                                        ${(() => {
+                                          const emb = face.embedding || [];
+                                          const preview = emb.slice(0, 10);  
+                                          return JSON.stringify(preview) + ` ... [${emb.length}차원]`;
+                                      })()}
+                                    </span>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                `).join("");
+
+                document.querySelectorAll('input[name="faceId"]').forEach(radio => {
+                    radio.addEventListener('change', () => {
+                        videoAndButton.classList.remove('hidden');
+                        selectMessage.classList.add('hidden');
+                        initWebcam();
+                    });
+                });
+                
+                document.querySelectorAll('.toggle-detail-btn').forEach(btn => {
+                    btn.addEventListener('click', (event) => {
+                        const faceId = event.target.getAttribute('data-id');
+                        const detailRow = document.getElementById(`detail-row-${faceId}`);
+                        detailRow.classList.toggle('hidden');
+                        event.target.textContent = detailRow.classList.contains('hidden') ? '상세 보기' : '숨기기';
+                    });
+                });
+            } catch (e) {
+                showMessage(`목록을 불러오는 중 오류 발생: ${e.message}`, 'error');
+            }
+        }
+
+        async function deleteFaceWithVerification(id, files) {
+            const formData = new FormData();
+            files.forEach(file => formData.append('files', file, 'webcam-image.jpg'));
+
+            try {
+                const res = await fetch(`/api/face/${id}/delete`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showMessage(data.message || '삭제 완료', 'success');
+                    fetchFaceList();
+                    closeWebcam();
+                } else {
+                    throw new Error(data.detail || data.message || '삭제 실패');
+                }
+            } catch (e) {
+                showMessage('삭제 요청 실패: ' + e.message, 'error');
+            }
+        }
+
+        // ✅ 인증 + 삭제 프로세스
+        async function captureAndVerifyAndDelete() {
+            const selectedRadio = document.querySelector('input[name="faceId"]:checked');
+            if (!selectedRadio) {
+                showMessage('먼저 삭제할 얼굴을 선택하세요.', 'error');
+                return;
+            }
+            const selectedFaceId = selectedRadio.value;
+            const selectedFaceName = selectedRadio.getAttribute('data-name');
+
+            if (!isVideoPlaying) {
+                showMessage('카메라가 준비되지 않았습니다.', 'error');
+                return;
+            }
+            
+            showLoading('얼굴을 인식 중...');
+            const files = await captureMultipleImages();
+            hideLoading();
+
+            if (files.length === 0) {
+                showMessage('이미지 캡처 오류. 얼굴을 다시 확인해주세요.', 'error');
+                return;
+            }
+
+            modalMessage.textContent = `${selectedFaceName}님(${selectedFaceId.substring(0, 8)}...)의 얼굴을 삭제하시겠습니까?`;
+            confirmModal.classList.remove('hidden');
+
+            let confirmed = await new Promise(resolve => {
+                modalConfirmBtn.onclick = () => resolve(true);
+                modalCancelBtn.onclick = () => resolve(false);
+            });
+
+            confirmModal.classList.add('hidden');
+            if (confirmed) {
+                await deleteFaceWithVerification(selectedFaceId, files);
+            } else {
+                showMessage('삭제가 취소되었습니다.', 'error');
+            }
+        }
+
+        authAndDeleteBtn.addEventListener('click', captureAndVerifyAndDelete);
+        closeWebcamBtn.addEventListener('click', closeWebcam);
+        
+        fetchFaceList();
+    </script>
+</Layout>

@@ -1,0 +1,68 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: alertmanager-monitoring-kube-prometheus-alertmanager
+  namespace: monitoring
+  labels:
+    app: kube-prometheus-stack-alertmanager
+    chart: kube-prometheus-stack
+    heritage: Helm
+    release: monitoring
+type: Opaque
+stringData:
+  alertmanager.yaml: |
+    global:
+      resolve_timeout: 5m
+    route:
+      receiver: slack-notifications
+      group_by: ['alertname']
+      group_wait: 10s
+      group_interval: 30s
+      repeat_interval: 1h
+    receivers:
+      - name: slack-notifications
+        slack_configs:
+          - api_url: "https://hooks.slack.com/triggers/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"
+            send_resolved: true
+
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: resource-alerts
+  namespace: monitoring
+  labels:
+    prometheus: kube-prometheus
+    role: alert-rules
+spec:
+  groups:
+  - name: resource-alerts
+    rules:
+    - alert: HighCPUUsage
+      expr: sum(rate(container_cpu_usage_seconds_total{namespace!="kube-system"}[5m])) by (pod) / sum(kube_pod_container_resource_limits_cpu_cores{namespace!="kube-system"}) by (pod) * 100 > 80
+      for: 2m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Pod {{ $labels.pod }} CPU usage > 80%"
+        description: "CPU usage is above 80% for more than 2 minutes"
+
+    - alert: HighMemoryUsage
+      expr: sum(container_memory_usage_bytes{namespace!="kube-system"}) by (pod) / sum(kube_pod_container_resource_limits_memory_bytes{namespace!="kube-system"}) by (pod) * 100 > 75
+      for: 2m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Pod {{ $labels.pod }} Memory usage > 75%"
+        description: "Memory usage is above 75% for more than 2 minutes"
+
+    - alert: HighLatency
+      expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{namespace!="kube-system"}[5m])) by (le, pod)) > 0.5
+      for: 2m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Pod {{ $labels.pod }} HTTP latency > 0.5s"
+        description: "95th percentile HTTP latency is above 0.5s for more than 2 minutes"
+

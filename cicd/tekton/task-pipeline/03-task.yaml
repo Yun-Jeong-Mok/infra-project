@@ -1,0 +1,28 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: build-api
+  namespace: tekton-pipelines
+spec:
+  params:
+    - name: gitrevision-tag
+      type: string
+  workspaces:
+    - name: shared-data
+  steps:
+    - name: build-and-push
+      image: quay.io/buildah/stable
+      workingDir: /workspace/shared-data/source/api
+      securityContext:
+        privileged: true
+      script: |
+        #!/bin/sh
+        IMAGE="10.0.5.12:5000/api:$(params.gitrevision-tag)"
+
+        echo "=== Building image $IMAGE ==="
+        buildah bud -f Containerfile -t $IMAGE .
+  
+        echo "=== Pushing image $IMAGE ==="
+        buildah push --tls-verify=false $IMAGE
+        echo "=== Done pushing $IMAGE ==="
+

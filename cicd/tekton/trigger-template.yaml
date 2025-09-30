@@ -1,0 +1,30 @@
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: template-git-clone-build
+  namespace: tekton-pipelines
+spec:
+  params:
+    - name: gitrevision-tag
+      description: git revision
+    - name: git-repo-url
+      description: git repository url
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        generateName: git-clone-build-run-
+      spec:
+        serviceAccountName: gitea-listener-sa
+        pipelineRef:
+          name: pipeline-git-build-deploy
+        params:
+          - name: gitrevision-tag
+            value: "main"
+          - name: git-repo-url
+            value: "http://10.0.5.12/gituser/service.git"
+        workspaces:
+          - name: shared-data
+            persistentVolumeClaim:
+              claimName: tekton-pvc
+

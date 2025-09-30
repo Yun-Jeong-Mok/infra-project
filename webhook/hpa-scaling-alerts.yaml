@@ -1,0 +1,28 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: hpa-scaling-alerts
+  namespace: monitoring
+  labels:
+    prometheus: monitoring-kube-prometheus-prometheus 
+spec:
+  groups:
+  - name: hpa.rules
+    rules:
+    - alert: HPAScaleOutDetected
+      expr: changes(kube_hpa_status_current_replicas{hpa="astro-deployment-high-load-hpa", namespace="web-service"}[1m]) > 0
+      for: 0m
+      labels:
+        severity: info
+      annotations:
+        summary: "HPA Scale-Out/In Event Detected for astro-deployment"
+        description: "Deployment astro-deployment has changed its replica count to {{ $value }} in the last minute due to scaling."
+    
+    - alert: HPAMaximumReached
+      expr: kube_hpa_status_current_replicas{hpa="astro-deployment-high-load-hpa", namespace="web-service"} == kube_hpa_spec_max_replicas{hpa="astro-deployment-high-load-hpa", namespace="web-service"}
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "HPA Max Replicas Reached: Scaling Limit Hit"
+        description: "Deployment astro-deployment is running at its maximum replica limit ({{ $value }}). Consider increasing maxReplicas or optimizing the application."

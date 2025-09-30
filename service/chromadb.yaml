@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: chroma-pvc-user-data
+  namespace: web-service
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: "chromadb-sc"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chromadb-svc
+  namespace: web-service
+spec:
+  selector:
+    app: chromadb
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+  type: ClusterIP
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chromadb-deployment
+  namespace: web-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chromadb
+  template:
+    metadata:
+      labels:
+        app: chromadb
+    spec:
+      containers:
+      - name: chromadb
+        image: quay.io/yjm011019/face-chromadb:1.0
+        ports:
+          - containerPort: 8000
+        env:
+        - name: CHROMA_SERVER_HOST
+          value: "0.0.0.0"
+        - name: CHROMA_SERVER_PORT
+          value: "8000"
+        volumeMounts:
+        - mountPath: /data/chroma_storage
+          name: chroma-storage
+      volumes:
+      - name: chroma-storage
+        persistentVolumeClaim:
+          claimName: chroma-pvc-user-data
+

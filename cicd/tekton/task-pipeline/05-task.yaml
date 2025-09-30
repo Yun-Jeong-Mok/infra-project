@@ -1,0 +1,18 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: update-deployment
+  namespace: tekton-pipelines
+spec:
+  params:
+    - name: gitrevision-tag
+      type: string
+  steps:
+    - name: update-deployment
+      image: bitnami/kubectl:latest
+      script: |
+        #!/bin/sh
+        TAG=$(params.gitrevision-tag)
+        kubectl set image deployment astro-deployment astro="10.0.5.12:5000/front:$TAG" -n web-service
+        kubectl set image deployment astro-deployment api-server="10.0.5.12:5000/api:$TAG" -n web-service
+        kubectl set image deployment astro-deployment ai-server="10.0.5.12:5000/ai:$TAG" -n web-service

@@ -1,0 +1,165 @@
+---
+import Layout from '../components/Layout.astro';
+import '../styles/global.css'
+---
+<Layout>
+  <div class="relative bg-white dark:bg-gray-800 rounded-xl shadow-lg p-10 w-full max-w-2xl flex flex-col items-center min-h-[520px]" style="padding-top: 64px;">
+    <a href="/" class="absolute top-6 left-6 px-4 py-2 bg-red-600 text-white rounded-lg shadow hover:bg-red-700 transition text-sm font-semibold z-10 cursor-pointer">
+      ← 뒤로가기
+    </a>
+    <div id="video-container" class="w-full flex flex-col items-center mb-6 relative" style="margin-top: 24px;">
+      <div class="relative w-full max-w-lg">
+        <video id="webcam" autoplay playsinline class="rounded-lg border border-gray-300 w-full aspect-video bg-black min-h-[320px]"></video>
+        <button id="closeWebcamBtn" class="absolute top-3 right-3 w-9 h-9 flex items-center justify-center bg-black bg-opacity-70 border-2 border-gray-300 rounded-lg text-white text-xl font-bold shadow-lg hover:bg-opacity-90 transition z-20 cursor-pointer hidden" style="outline: none;">
+          ×
+        </button>
+      </div>
+    </div>
+    <button id="openWebcamBtn" class="px-6 py-2 bg-indigo-600 text-white rounded-lg font-semibold shadow hover:bg-indigo-700 transition mb-4 cursor-pointer" style="margin-top: 12px;">웹캠 열기</button>
+    <div id="nameInputContainer" class="flex flex-col items-center w-full max-w-lg mb-4 hidden">
+    <label for="nameInput" class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">이름을 입력하세요:</label>
+    <input type="text" id="nameInput" class="dark:bg-gray-900 w-xs text-right px-4 py-2 border border-gray-300 dark:text-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+</div>
+    <div id="actionBtns" class="flex space-x-4 mb-2 hidden">
+      <button id="registerBtn" class="px-4 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition cursor-pointer">등록</button>
+      <button id="verifyBtn" class="px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition cursor-pointer">조회</button>
+    </div>
+    <div id="statusMsg" class="mt-4 text-center text-sm text-gray-700 dark:text-gray-200"></div>
+  </div>
+  <script type="text/javascript">
+    const openWebcamBtn = document.getElementById('openWebcamBtn');
+    const closeWebcamBtn = document.getElementById('closeWebcamBtn');
+    const webcam = document.getElementById('webcam');
+    const actionBtns = document.getElementById('actionBtns');
+    const registerBtn = document.getElementById('registerBtn');
+    const verifyBtn = document.getElementById('verifyBtn');
+    const statusMsg = document.getElementById('statusMsg');
+    const nameInputContainer = document.getElementById('nameInputContainer');
+    const nameInput = document.getElementById('nameInput');
+    const NUM_FRAMES = 20;
+    const FRAME_INTERVAL = 50;
+
+    let stream = null;
+
+    function resetStatusMsg() {
+      statusMsg.textContent = '';
+      statusMsg.classList.remove('text-red-500');
+      statusMsg.classList.add('text-gray-700', 'dark:text-gray-200');
+    }
+
+    openWebcamBtn.onclick = async () => {
+      if (stream) return;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        webcam.srcObject = stream;
+        actionBtns.classList.remove('hidden');
+        openWebcamBtn.classList.add('hidden');
+        closeWebcamBtn.classList.remove('hidden');
+        nameInputContainer.classList.remove('hidden')
+        resetStatusMsg();
+        statusMsg.textContent = '웹캠이 활성화되었습니다.';
+      } catch (e) {
+        statusMsg.textContent = '웹캠 접근 권한이 필요합니다.';
+      }
+    };
+
+    closeWebcamBtn.onclick = () => {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        stream = null;
+      }
+      webcam.srcObject = null;
+      actionBtns.classList.add('hidden');
+      openWebcamBtn.classList.remove('hidden');
+      closeWebcamBtn.classList.add('hidden');
+      nameInputContainer.classList.add('hidden');
+      nameInput.value = '';
+      resetStatusMsg();
+      statusMsg.textContent = '웹캠이 비활성화되었습니다.';
+    };
+
+    function captureWebcamImage() {
+      const video = document.getElementById('webcam');
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      return new Promise(resolve => {
+        canvas.toBlob(blob => {
+          resolve(blob);
+        }, 'image/jpeg');
+      });
+    }
+
+    async function captureMultipleImages() {
+      const capturedFiles = [];
+      resetStatusMsg();
+      statusMsg.textContent = `사진을 촬영하는 중입니다... (0/${NUM_FRAMES})`;
+      for (let i = 0; i < NUM_FRAMES; i++) {
+        const file = await captureWebcamImage();
+        capturedFiles.push(file);
+        statusMsg.textContent = `사진을 촬영하는 중입니다... (${i + 1}/${NUM_FRAMES})`;
+        await new Promise(resolve => setTimeout(resolve, FRAME_INTERVAL));
+      }
+      return capturedFiles;
+    }
+
+    // 등록 버튼 클릭 시
+    registerBtn?.addEventListener('click', async () => {
+      resetStatusMsg(); 
+      const name = nameInput.value.trim();
+      if (!name) {
+        // 이름이 없을 경우 빨간색 경고 메시지 표시
+        statusMsg.textContent = "사용자 이름을 입력하세요.";
+        statusMsg.classList.remove('text-gray-700', 'dark:text-gray-200');
+        statusMsg.classList.add('text-red-500');
+        return;
+      }
+
+      const files = await captureMultipleImages();
+  
+      statusMsg.textContent = '등록을 진행하는 중입니다...';
+      const formData = new FormData();
+      files.forEach(file => {
+        formData.append('files', file, 'capture.jpg');
+      });
+      formData.append('name', name); // 이름 필드 추가
+
+      try {
+        const res = await fetch('/api/register', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        statusMsg.textContent = data.message || JSON.stringify(data);
+      } catch (e) {
+        statusMsg.textContent = '등록 실패: ' + e;
+      }
+    });
+
+    // 조회 버튼 클릭 시
+    verifyBtn?.addEventListener('click', async () => {
+      resetStatusMsg();
+      statusMsg.textContent = '사용자 확인 중입니다. 잠시만 기다려주세요...';
+      const files = await captureMultipleImages();
+      
+      statusMsg.textContent = '조회를 진행하는 중입니다...';
+      const formData = new FormData();
+      files.forEach(file => {
+        formData.append('files', file, 'capture.jpg');
+      });
+
+      try {
+        const res = await fetch('/api/verify', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        statusMsg.textContent = data['status'] ? `인증: ${data['status']} (유사도: ${data['similarity']})` : (data.message || JSON.stringify(data));
+      } catch (e) {
+        statusMsg.textContent = '조회 실패: ' + e;
+      }
+    });
+  </script>
+</Layout>

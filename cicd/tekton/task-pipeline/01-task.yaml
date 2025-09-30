@@ -1,0 +1,36 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: git-clone
+  namespace: tekton-pipelines
+spec:
+  params:
+    - name: url
+      type: string
+    - name: revision
+      type: string
+  workspaces:
+    - name: output
+      description: The workspace where the git repo will be cloned.
+  results:
+    - name: image-tag
+      description: clone time to image tag
+  steps:
+    - name: clone
+      image: "10.0.5.12:5000/git:latest"
+      workingDir: $(workspaces.output.path)
+      script: |
+        #!/bin/sh
+        set -ex
+
+        if [ -d "source" ]; then
+          rm -rf "source"
+        fi
+
+        mkdir source
+        cd source
+        git clone "$(params.url)" .
+        git checkout "$(params.revision)"
+
+        export BUILD_TAG=$(date "+%y.%m.%d-%H%M%S")
+        echo -n $BUILD_TAG > $(results.image-tag.path)

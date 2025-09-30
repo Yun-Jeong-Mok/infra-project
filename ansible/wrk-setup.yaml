@@ -1,0 +1,38 @@
+- name: wrk setting for DDoS attack
+  hosts: cmd
+  become: yes
+  tasks:
+    - name: installation build dependencies for using wrk
+      ansible.builtin.dnf:
+        name: 
+          - git
+          - tar
+          - unzip
+          - perl-FindBin
+          - gcc
+          - perl-devel
+          - openssl-devel
+          - make
+        state: present
+
+    - name: Clone wrk repository
+      ansible.builtin.git:
+        repo: 'https://github.com/wg/wrk.git'
+        dest: /usr/local/src/wrk
+        force: yes
+
+    - name: Build wrk from source
+      ansible.builtin.command:
+        cmd: make
+        chdir: /usr/local/src/wrk
+      
+    - name: Move wrk executable to a system PATH
+      ansible.builtin.command:
+        cmd: mv wrk /usr/local/bin/
+        chdir: /usr/local/src/wrk
+
+    - name: Start traffic to Kubernetes service
+      ansible.builtin.command:
+        cmd: "wrk -t4 -c3000 -d60s http://10.0.2.247:30001"
+      async: 10
+      poll: 0

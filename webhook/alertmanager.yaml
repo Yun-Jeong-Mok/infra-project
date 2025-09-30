@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: alertmanager-monitoring-kube-prometheus-alertmanager
+  namespace: monitoring
+  labels:
+    app: kube-prometheus-stack-alertmanager
+    chart: kube-prometheus-stack
+    heritage: Helm
+    release: monitoring
+type: Opaque
+stringData:
+  alertmanager.yaml: |
+    global:
+      resolve_timeout: 5m
+    route:
+      receiver: slack-notifications
+      group_by: ['alertname']
+      group_wait: 10s
+      group_interval: 30s
+      repeat_interval: 1h
+    receivers:
+      - name: slack-notifications
+        slack_configs:
+          - api_url:  "https://hooks.slack.com/triggers/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"
+            send_resolved: true
+

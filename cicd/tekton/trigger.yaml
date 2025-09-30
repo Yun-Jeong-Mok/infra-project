@@ -1,0 +1,11 @@
+apiVersion: triggers.tekton.dev/v1beta1
+kind: Trigger
+metadata:
+  name: trigger-git-clone-build
+  namespace: tekton-pipelines
+spec:
+  bindings:
+    - ref: binding-git
+  template:
+    ref: template-git-clone-build
+

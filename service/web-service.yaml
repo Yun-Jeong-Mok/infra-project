@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: astro-deployment
+  namespace: web-service
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: astro
+  template:
+    metadata:
+      labels:
+        app: astro
+    spec:
+      containers:
+      - name: astro
+        image: "10.0.5.12:5000/front:25.09.25-062511"
+        ports: 
+          - containerPort: 4321
+      - name: api-server
+        image: "10.0.5.12:5000/api:25.09.25-062511"
+        ports: 
+          - containerPort: 8888
+        env:
+        - name: AI_SERVER_URL
+          value: "http://localhost"
+        - name: AI_SERVER_PORT
+          value: "8001"
+        - name: SERVER_ROLE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: CHROMA_SERVER_HOST
+          value: "chromadb-svc"
+        - name: CHROMA_SERVER_PORT
+          value: "8000"
+        volumeMounts:
+        - name: api-tls-secret
+          mountPath: "/etc/ssl/certs"
+          readOnly: true
+      - name: ai-server
+        image: "10.0.5.12:5000/ai:25.09.25-062511"
+        ports:
+          - containerPort: 8001
+        env:
+        - name: CHROMA_SERVER_HOST
+          value: "chromadb-svc"
+        - name: CHROMA_SERVER_PORT
+          value: "8000"
+        - name: SERVER_ROLE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+      volumes:
+      - name: api-tls-secret
+        secret:
+          secretName: api-tls-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: astro-svc
+  namespace: web-service
+spec:
+  selector:
+    app: astro
+  type: NodePort 
+  ports:
+    - protocol: TCP
+      port: 443         
+      targetPort: 4321
+      nodePort: 30001

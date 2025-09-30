@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: zerotier-client
+  namespace: zerotier
+  labels:
+    app: zerotier-client
+spec:
+  selector:
+    matchLabels:
+      app: zerotier-client
+  template:
+    metadata:
+      labels:
+        app: zerotier-client
+    spec:
+      hostNetwork: true 
+      tolerations: 
+      - operator: Exists
+      containers:
+      - name: zerotier
+        image: "10.0.5.12:5000/vpn:v1" 
+        securityContext:
+          privileged: true 
+          capabilities:
+            add: ["NET_ADMIN", "NET_RAW"] 
+        volumeMounts:
+        - name: zerotier-data
+          mountPath: /var/lib/zerotier-one
+      volumes:
+      - name: zerotier-data
+        hostPath:
+          path: /var/lib/zerotier-one
+          type: DirectoryOrCreate

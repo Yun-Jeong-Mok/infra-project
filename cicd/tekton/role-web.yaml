@@ -1,0 +1,11 @@
+# deploy-role.yaml 수정
+# kubectl edit role deploy-role -n web-service
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: deploy-role
+  namespace: web-service
+rules:
+- apiGroups: ["apps"]
+  resources: ["deployments"]
+  verbs: ["get", "list", "watch", "update", "patch"] 

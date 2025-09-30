@@ -1,0 +1,17 @@
+# event-listener.yaml
+apiVersion: triggers.tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: gitea-event-listener
+  namespace: tekton-pipelines
+spec:
+  serviceAccountName: gitea-listener-sa
+  triggers:
+    - name: gitea-trigger
+      bindings:
+        - ref: binding-git
+      template:
+        ref: git-clone-pipeline-template # 👈 이 이름이 TriggerTemplate과 일치해야 합니다.
+  resources:
+    kubernetesResource:
+      serviceType: NodePort

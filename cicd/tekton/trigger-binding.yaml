@@ -1,0 +1,12 @@
+# trigger-binding.yaml
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: binding-git
+  namespace: tekton-pipelines
+spec:
+  params:
+    - name: gitrevision-tag
+      value: "main"
+    - name: git-repo-url
+      value: "http://10.0.5.12/gituser/service.git"

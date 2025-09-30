@@ -1,0 +1,73 @@
+# pipeline-git-build-deploy.yaml
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: pipeline-git-build-deploy
+  namespace: tekton-pipelines
+spec:
+  params:
+    - name: gitrevision-tag
+      type: string
+    - name: git-repo-url
+      type: string
+  workspaces:
+    - name: shared-data
+  tasks:
+    - name: clone
+      taskRef:
+        name: git-clone
+      params:
+        - name: url
+          value: $(params.git-repo-url)
+        - name: revision
+          value: $(params.gitrevision-tag)
+      workspaces:
+        - name: output
+          workspace: shared-data
+
+    - name: build-ai
+      taskRef:
+        name: build-ai
+      params:
+        - name: gitrevision-tag
+          value: $(tasks.clone.results.image-tag)
+      workspaces:
+        - name: shared-data
+          workspace: shared-data
+      runAfter:
+        - clone
+
+    - name: build-api
+      taskRef:
+        name: build-api
+      params:
+        - name: gitrevision-tag
+          value: $(tasks.clone.results.image-tag)
+      workspaces:
+        - name: shared-data
+          workspace: shared-data
+      runAfter:
+        - clone
+
+    - name: build-front
+      taskRef:
+        name: build-front
+      params:
+        - name: gitrevision-tag
+          value: $(tasks.clone.results.image-tag)
+      workspaces:
+        - name: shared-data
+          workspace: shared-data
+      runAfter:
+        - clone
+
+    - name: deploy
+      taskRef:
+        name: update-deployment
+      params:
+        - name: gitrevision-tag
+          value: $(tasks.clone.results.image-tag)
+      runAfter:
+        - build-ai
+        - build-api
+        - build-front

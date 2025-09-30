@@ -1,0 +1,27 @@
+- name: DDoS simulation with Wrk
+  hosts: cmd
+  become: yes
+  tasks:
+    - name: Start traffic to target
+      ansible.builtin.command:
+        cmd: "/usr/local/bin/wrk -t4 -c1000 -d60s http://10.0.2.247:30001"
+      async: 10
+      poll: 0
+
+    - name: Wait for 2 seconds to allow process to start
+      ansible.builtin.pause:
+        seconds: 2
+
+    - name: Check for wrk process
+      ansible.builtin.shell: "ps aux | grep [w]rk"
+      register: wrk_process
+      failed_when: wrk_process.rc not in [0,1]
+
+    - name: wrk process status show
+      ansible.builtin.debug:
+        msg: 
+          - "wrk Process Status (rc={{ wrk_process.rc }}):"
+          - "----------------------------------------"
+          - "{{ wrk_process.stdout }}"
+          - "Process Found: {{ wrk_process.stdout != '' }}"
+      when: wrk_process is defined
