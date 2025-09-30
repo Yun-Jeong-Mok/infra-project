@@ -4,7 +4,7 @@
 ## 🛠️ 기술 스택
 
 ☁️ ### 인프라 (총 16대 인스턴스로 구성)
-<p>
+<div align="left">
 <img src="https://www.google.com/search?q=https://img.shields.io/badge/Openstack-F01717%3Fstyle%3Dflat-square%26logo%3Dopenstack%26logoColor%3Dwhite"/>
 <img src="https://www.google.com/search?q=https://img.shields.io/badge/Kubernetes-326CE5%3Fstyle%3Dflat-square%26logo%3Dkubernetes%26logoColor%3Dwhite"/>
 <img src="https://www.google.com/search?q=https://img.shields.io/badge/Helm-0F1689%3Fstyle%3Dflat-square%26logo%3Dhelm%26logoColor%3Dwhite"/>
@@ -22,7 +22,7 @@
 <img src="https://www.google.com/search?q=https://img.shields.io/badge/Minio-FF8C00%3Fstyle%3Dflat-square%26logo%3Dminio%26logoColor%3Dwhite"/>
 <img src="https://www.google.com/search?q=https://img.shields.io/badge/Velero-4E9DBC%3Fstyle%3Dflat-square%26logo%3Dkubernetes%26logoColor%3Dwhite"/>
 <img src="https://www.google.com/search?q=https://img.shields.io/badge/Rook/Ceph-5404FF%3Fstyle%3Dflat-square%26logo%3Dceph%26logoColor%3Dwhite"/>
-</p>
+</div>
 
 ### 💻 웹 서비스
 <p>
